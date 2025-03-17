@@ -28,6 +28,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  // console.log(req.headers["cookie"].split(";")[3].trim().split("=")[1]);
   Product.find()
     .then((products) => {
       res.render("shop/index", {
