@@ -9,6 +9,7 @@ exports.getAddProduct = (req, res, next) => {
     formCSS: true,
     activeProduct: true,
     editing: false,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -23,7 +24,7 @@ exports.postAddProduct = (req, res, next) => {
     price,
     description,
     imageUrl,
-    userId: req.user,
+    userId: req.session.user,
   });
   product
     .save()
@@ -53,6 +54,7 @@ exports.getEditProduct = (req, res, next) => {
         pageTitle: "Edit Product",
         editing: editMode,
         product,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -102,6 +104,7 @@ exports.getProducts = (req, res, next) => {
         hasProducts: products.length > 0,
         productCSS: true,
         activeShop: true,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
