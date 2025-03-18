@@ -1,15 +1,15 @@
 const Product = require("../models/product");
 const monogdb = require("mongodb");
+const { validationResult } = require("express-validator");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    productCSS: true,
-    formCSS: true,
-    activeProduct: true,
     editing: false,
-    isAuthenticated: req.session.isLoggedIn,
+    hasErrors: false,
+    errorMessage: null,
+    validationErrors: [],
   });
 };
 
@@ -18,6 +18,25 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      hasErrors: true,
+      product: {
+        title,
+        imageUrl,
+        description,
+        price,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
 
   const product = new Product({
     title,
@@ -55,6 +74,9 @@ exports.getEditProduct = (req, res, next) => {
         editing: editMode,
         product,
         isAuthenticated: req.session.isLoggedIn,
+        errorMessage: null,
+        validationErrors: [],
+        hasErrors: false,
       });
     })
     .catch((err) => console.log(err));
@@ -66,6 +88,26 @@ exports.postEditProduct = (req, res, next) => {
   const updatedImageUrl = req.body.imageUrl;
   const updatedPrice = req.body.price;
   const updatedDesc = req.body.description;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      hasErrors: true,
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        price: updatedPrice,
+        description: updatedDesc,
+        _id: prodId,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
 
   Product.findById(prodId)
     .then((product) => {
