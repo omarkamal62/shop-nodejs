@@ -22,7 +22,6 @@ router.post(
       .isLength({ min: 3 })
       .trim()
       .withMessage("Title length should be at least 3 characters"),
-    check("imageUrl").isURL().withMessage("Invalid url"),
     check("price").isNumeric().withMessage("price should number"),
     check("description")
       .isLength({ min: 5, max: 400 })
@@ -44,7 +43,6 @@ router.post(
       .isLength({ min: 3 })
       .trim()
       .withMessage("Title length should be at least 3 characters"),
-    check("imageUrl").isURL().withMessage("Invalid url"),
     check("price").isNumeric().withMessage("price should number"),
     check("description")
       .isLength({ min: 5, max: 400 })
