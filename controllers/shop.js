@@ -4,14 +4,33 @@ const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 
+const ITEMS_PER_PAGE = 1;
+
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalCount;
+
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalCount = numProducts;
+
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
         isAuthenticated: req.session.isLoggedIn,
+        hasNextButton: page * ITEMS_PER_PAGE < totalCount,
+        hasPreviousButton: page > 1,
+        currentPage: page,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalCount / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
@@ -42,13 +61,31 @@ exports.getProduct = (req, res, next) => {
 
 exports.getIndex = (req, res, next) => {
   // console.log(req.headers["cookie"].split(";")[3].trim().split("=")[1]);
+
+  const page = +req.query.page || 1;
+  let totalCount;
+
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalCount = numProducts;
+
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
         path: "/",
         isAuthenticated: req.session.isLoggedIn,
+        hasNextButton: page * ITEMS_PER_PAGE < totalCount,
+        hasPreviousButton: page > 1,
+        currentPage: page,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalCount / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
