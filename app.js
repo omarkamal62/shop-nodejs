@@ -9,6 +9,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+require("dotenv").config();
 
 const User = require("./models/user");
 
@@ -17,8 +18,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-const MONGODB_URI =
-  "mongodb+srv://omarkamal:oMk6294@cluster0.ayo0i.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0";
+const MONGODB_URI = process.env.DB_URL;
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,
